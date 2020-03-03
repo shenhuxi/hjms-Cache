@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@Order(2)
 @Component
 public class EhcacheService implements com.pci.hjmos.cache.api.Cache {
     private final Cache currentCache ;
