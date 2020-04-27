@@ -1,0 +1,71 @@
+{
+  "modified": "Mon Mar 23 2020 11:18:20 GMT+0800 (中国标准时间)",
+  "dataBindings": [
+    {
+      "attr": "stationLabel",
+      "valueType": "String"
+    }
+  ],
+  "width": 30,
+  "height": 30,
+  "comps": [
+    {
+      "type": "shape",
+      "background": "#ffffff",
+      "fillRule": "evenodd",
+      "pixelPerfect": true,
+      "points": [
+        29.5,
+        15,
+        29.5,
+        7.04554,
+        22.95446,
+        0.5,
+        15,
+        0.5,
+        7.04554,
+        0.5,
+        0.5,
+        7.04554,
+        0.5,
+        15,
+        0.5,
+        22.95446,
+        7.04554,
+        29.5,
+        15,
+        29.5,
+        22.95446,
+        29.5,
+        29.5,
+        22.95446,
+        29.5,
+        15
+      ],
+      "segments": [
+        1,
+        4,
+        4,
+        4,
+        4
+      ]
+    },
+    {
+      "type": "text",
+      "text": {
+        "func": "attr@stationLabel",
+        "value": "3"
+      },
+      "align": "center",
+      "color": "#e02020",
+      "font": "16px PingFangSC-Medium, \"PingFang SC\"",
+      "pixelPerfect": true,
+      "rect": [
+        0.5,
+        0.5,
+        29,
+        29
+      ]
+    }
+  ]
+}

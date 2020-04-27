@@ -1,0 +1,21 @@
+{
+  "modified": "Mon Mar 23 2020 11:27:07 GMT+0800 (中国标准时间)",
+  "background": "rgb(247,247,247)",
+  "width": 12,
+  "height": 12,
+  "comps": [
+    {
+      "type": "circle",
+      "background": {
+        "func": "attr@bgcolor",
+        "value": "rgb(212,0,0)"
+      },
+      "rect": [
+        1,
+        1,
+        10,
+        10
+      ]
+    }
+  ]
+}
