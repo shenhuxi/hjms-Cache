@@ -1,4 +1,4 @@
-package com.pci.hjmos.cache.config;
+package com.pci.hjmos.cache.config_other;
 
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.listener.*;

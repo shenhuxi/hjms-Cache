@@ -1,7 +1,7 @@
 server:
-  port: 8888
-#  servlet:
-#    context-path: /aaa
+  port: 8887
+  servlet:
+    context-path: /netcommand
 spring:
   redis:
 #    host: 10.38.2.12
@@ -22,11 +22,13 @@ spring:
     prefix: classpath:/static/
     suffix: .html
     mode: LEGACYHTML5
-    #    mode: HTML5
+    #mode: HTML5
     encoding: UTF-8
     cache: false
     servlet:
       content-type: text/html
+#  mvc:
+#    static-path-pattern: static/**
 #  freemarker:
 #    template-loader-path: classpath:/templates/
 #    cache: false

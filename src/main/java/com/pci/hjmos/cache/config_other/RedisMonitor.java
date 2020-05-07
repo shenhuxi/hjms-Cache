@@ -1,4 +1,4 @@
-package com.pci.hjmos.cache.config;
+package com.pci.hjmos.cache.config_other;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
