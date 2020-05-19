@@ -1,16 +1,12 @@
 package com.pci.hjmos.cache.config_eh;
 
-import com.pci.hjmos.cache.MTest;
 import com.pci.hjmos.cache.util.SpringUtil;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.stereotype.Component;
 
 //@Component
 public class CreateCacheManager implements ApplicationRunner {

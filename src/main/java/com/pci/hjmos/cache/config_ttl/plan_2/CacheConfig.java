@@ -24,8 +24,8 @@ public class CacheConfig extends CachingConfigurerSupport {
     @Bean
     public CacheManager cacheManager() {
         RedisCacheConfiguration defaultCacheConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofDays(1)) // 默认没有特殊指定的
-                .computePrefixWith(cacheName -> "caching:" + cacheName);
+                .entryTtl(Duration.ofDays(1)); // 默认没有特殊指定的
+                //.computePrefixWith(cacheName -> "caching:" + cacheName);
 
         // 针对不同cacheName，设置不同的过期时间
         Map<String, RedisCacheConfiguration> initialCacheConfiguration = new HashMap<String, RedisCacheConfiguration>() {{

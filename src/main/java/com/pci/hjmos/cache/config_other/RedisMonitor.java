@@ -17,7 +17,7 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 public class RedisMonitor {
 
     @Autowired(required = false)
-    private RedisTemplate<String, String> redisTemplate;
+    private RedisTemplate<String, Object> redisTemplate;
     @Bean
     public RedisMessageListenerContainer redisMessageListenerContainer() {
         RedisMessageListenerContainer redisMessageListenerContainer = new RedisMessageListenerContainer();

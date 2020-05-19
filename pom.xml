@@ -21,6 +21,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring.data.redis>2.1.11.RELEASE</spring.data.redis>
     <lettuce.core>5.1.8.RELEASE</lettuce.core>
+    <commons-pool2>2.6.2</commons-pool2>
     <jedis>2.9.3</jedis>
   </properties>
 
@@ -90,17 +91,22 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-pool2</artifactId>
+      <version>${commons-pool2}</version>
+    </dependency>
+    <dependency>
       <groupId>redis.clients</groupId>
       <artifactId>jedis</artifactId>
       <version>${jedis}</version>
     </dependency>
 
-    <!--<dependency>-->
-      <!--<groupId>org.redisson</groupId>-->
-      <!--<artifactId>redisson</artifactId>-->
-      <!--<version>3.8.2</version>-->
-      <!--<optional>true</optional>-->
-    <!--</dependency>-->
+    <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson</artifactId>
+      <version>3.8.2</version>
+      <optional>true</optional>
+    </dependency>
 
     <!--log4j2日志-->
     <dependency>

@@ -7,9 +7,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class CacheDemoServiceImpl implements CacheDemoService {
 
-    @Cacheable(cacheNames = {
-            "demoCache#60#10", "demoCar#20"
-    }, key = "#id")
+    @Cacheable(cacheNames = {"demoCache#60#10", "demoCar#20"}, key = "#id")
     @Override
     public Object getFromDB(Integer id) {
         System.out.println("模拟去db查询~~~" + id);

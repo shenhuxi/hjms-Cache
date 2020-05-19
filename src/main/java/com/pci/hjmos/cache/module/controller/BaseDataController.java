@@ -8,14 +8,20 @@ import com.pci.hjmos.cache.util.SpringUtil;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.Cache;
 import org.springframework.cache.ehcache.EhCacheCache;
+import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceClusterConnection;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/cache")
@@ -51,9 +57,16 @@ public class BaseDataController {
         redisTemplate.opsForValue().set(key,zahngShan);
         return "ok";
     }
+    @GetMapping("/setTime")
+    public Object setTime(String key ,String value,Long time) {
+        ValueOperations<String, Object> vo = redisTemplate.opsForValue();
+        vo.set(key,value,time, TimeUnit.SECONDS);
+        return "ok";
+    }
 
     @GetMapping("/get")
     public Object get(String key) {
+       // Set<String> ss = redisTemplate.keys("*N01*");
         return redisTemplate.opsForValue().get(key);
     }
 
@@ -75,6 +88,23 @@ public class BaseDataController {
     public Object getDB() {
         JedisConnectionFactory connectionFactory = (JedisConnectionFactory) redisTemplate.getConnectionFactory();
         return  connectionFactory.getDatabase();
+    }
+
+    @GetMapping("/testPool")
+    public Object testPool(String key ,String value) {
+        ValueOperations<String, Object> vo = redisTemplate.opsForValue();
+
+        List<User> list = new ArrayList<>();
+        for(int i = 0;i< 10000;i++){
+            list.add(new User().setName(key+1).setId(i).setSex(value));
+        }
+        list.parallelStream().forEach(u->{
+            vo.set(u.getId().toString(),u);
+            LettuceClusterConnection connection = (LettuceClusterConnection) redisTemplate.getConnectionFactory().getConnection();
+            System.out.println("线程："+Thread.currentThread().getName()+"-----执行了："+u.getId());
+        });
+
+        return "ok";
     }
 
 //    @GetMapping("/testRedission")

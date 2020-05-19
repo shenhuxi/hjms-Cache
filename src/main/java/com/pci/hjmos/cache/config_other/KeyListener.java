@@ -18,7 +18,7 @@ public class KeyListener extends KeyExpirationEventMessageListener {
         String channel = new String(message.getChannel(), StandardCharsets.UTF_8);
         //过期的key
         String key = new String(message.getBody(), StandardCharsets.UTF_8);
-        System.out.println("2监听到了key:"+key);
+        //System.out.println("2监听到了key:"+key);
     }
 
     @Override

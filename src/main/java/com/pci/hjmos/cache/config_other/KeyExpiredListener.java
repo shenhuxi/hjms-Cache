@@ -25,6 +25,6 @@ public class KeyExpiredListener extends KeyExpirationEventMessageListener {
 
     @Override
     protected void doRegister(RedisMessageListenerContainer listenerContainer) {
-        listenerContainer.addMessageListener(this,new PatternTopic("__keyevent@1__:expired"));
+        listenerContainer.addMessageListener(this,new PatternTopic("__keyevent@*__:expired"));
     }
 }
