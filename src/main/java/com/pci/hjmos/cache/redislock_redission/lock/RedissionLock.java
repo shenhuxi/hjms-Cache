@@ -1,12 +1,9 @@
-package com.pci.hjmos.cache.redisLock;
+package com.pci.hjmos.cache.redislock_redission.lock;
 
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import redis.clients.jedis.JedisCommands;
 
 import java.util.concurrent.TimeUnit;
 
@@ -30,6 +27,8 @@ public class RedissionLock {
         } catch (Exception e) {
             e.getStackTrace();
         }
+        if(isLock)
+            System.out.println("成功获取到锁：线程为："+Thread.currentThread().getName());
         return  isLock;
     }
 

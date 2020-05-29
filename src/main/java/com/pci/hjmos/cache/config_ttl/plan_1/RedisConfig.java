@@ -60,7 +60,7 @@ public class RedisConfig extends CachingConfigurerSupport {
     public CacheManager cacheManager() {
 	
         RedisConnectionFactory connectionFactory = redisTemplate().getConnectionFactory();
-        RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory);
+        //RedisCacheWriter redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(connectionFactory);
 
 
         //上面实现的缓存读写

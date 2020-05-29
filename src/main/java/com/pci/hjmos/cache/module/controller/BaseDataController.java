@@ -61,6 +61,7 @@ public class BaseDataController {
     public Object setTime(String key ,String value,Long time) {
         ValueOperations<String, Object> vo = redisTemplate.opsForValue();
         vo.set(key,value,time, TimeUnit.SECONDS);
+        System.out.println("修改了代码....");
         return "ok";
     }
 

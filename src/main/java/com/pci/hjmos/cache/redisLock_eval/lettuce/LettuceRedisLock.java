@@ -1,7 +1,9 @@
-package com.pci.hjmos.cache.redisLock;
+package com.pci.hjmos.cache.redisLock_eval.lettuce;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.connection.RedisScriptingCommands;
 import org.springframework.data.redis.connection.RedisStringCommands;
+import org.springframework.data.redis.connection.ReturnType;
 import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.types.Expiration;
@@ -19,7 +21,7 @@ import java.util.List;
  * @Modified By
  */
 @Service
-public class SimpleRedisLock_2 {
+public class LettuceRedisLock {
     public final static String LOCK_KEY = "hjmos_lock_";
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
@@ -52,27 +54,24 @@ public class SimpleRedisLock_2 {
                 "end ";
     }
 
-    public boolean releaseDistributedLock(String key, String requestId) {
-        List<String> keys = new ArrayList<>();
-        keys.add(key);
-        List<String> args = new ArrayList<>();
-        args.add(requestId);
+    public boolean unLock(String key, String password) {
+        byte[] totalKey = (LOCK_KEY + key).getBytes();
+        byte[] passwordByte = password.getBytes();
         // 使用lua脚本删除redis中匹配value的key，可以避免由于方法执行时间过长而redis锁自动过期失效的时候误删其他线程的锁
         // spring自带的执行脚本方法中，集群模式直接抛出不支持执行脚本的异常，所以只能拿到原redis的connection来执行脚本
         RedisCallback<Long> callback = (connection) -> {
-            Object nativeConnection = connection.getNativeConnection();
-            // 集群模式和单机模式虽然执行脚本的方法一样，但是没有共同的接口，所以只能分开执行
-            // 集群模式
-            if (nativeConnection instanceof JedisCluster) {
-                return (Long) ((JedisCluster) nativeConnection).eval(UNLOCK_LUA, keys, args);
-            }
-            // 单机模式
-            else if (nativeConnection instanceof Jedis) {
-                return (Long) ((Jedis) nativeConnection).eval(UNLOCK_LUA, keys, args);
-            }
-            return 0L;
+            //使用统一的底层接口执行脚本
+            RedisScriptingCommands commands = connection.scriptingCommands();
+            return (Long) (commands.eval(UNLOCK_LUA.getBytes(), ReturnType.INTEGER, 1, totalKey, passwordByte));
         };
-        Long result = redisTemplate.execute(callback);
-        return result != null && result > 0;
+        Long result = null;
+        try {
+            result = redisTemplate.execute(callback);
+        } catch (Exception e) {
+            System.out.println("分布式锁key:{}，异常：{}");
+        }
+        boolean b = result != null && result > 0;
+        System.out.println("释放普通锁key：{}，结果：{}");
+        return b;
     }
 }

@@ -1,4 +1,4 @@
-package com.pci.hjmos.cache.redisLock;
+package com.pci.hjmos.cache.redisLock_eval.Jedis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisCallback;
