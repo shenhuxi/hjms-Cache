@@ -1,13 +1,17 @@
 
 package com.pci.hjmos.cache.module.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.pci.hjmos.cache.config_eh.MyEhCacheCacheManager;
 import com.pci.hjmos.cache.module.entity.User;
+import com.pci.hjmos.cache.module.repository.SystemUserMapper;
 import com.pci.hjmos.cache.module.service.CacheDemoService;
+import com.pci.hjmos.cache.util.JsonUtils;
 import com.pci.hjmos.cache.util.SpringUtil;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -28,15 +33,28 @@ import java.util.concurrent.TimeUnit;
 public class BaseDataController {
 
     @Autowired
+    @Qualifier("jdkredisTemplate")
     RedisTemplate<String, Object> redisTemplate;
+    @Autowired
+    @Qualifier("jackson2redisTemplate")
+    RedisTemplate<String, Object> jackson2redisTemplate;
+    @Autowired
+    @Qualifier("jacksonredisTemplate")
+    RedisTemplate<String, Object> jacksonredisTemplate;
+    @Autowired
+    @Qualifier("genericJackson2redisTemplate")
+    RedisTemplate<String, Object> genericJackson2redisTemplate;
 
     @Autowired
     private CacheDemoService cacheDemoService;
+
+    @Autowired
+    SystemUserMapper systemUserMapper;
 //    @Autowired
 //    private RedissonClient redissonClient;
 
     @GetMapping("/testCache")
-    public Object testCache(Integer id ) {
+    public User testCache(Integer id ) {
         return cacheDemoService.getFromDB(id);
     }
 
@@ -53,9 +71,33 @@ public class BaseDataController {
 
     @GetMapping("/set")
     public Object set(String key ,String value) {
-        User zahngShan= new User().setId(1).setName("张三").setSex("男");
-        redisTemplate.opsForValue().set(key,zahngShan);
-        return "ok";
+        User zahngShan= systemUserMapper.selectById(Integer.valueOf(value));
+        //1.jdk
+        redisTemplate.opsForValue().set(key+"jdk",zahngShan);
+        Object o = redisTemplate.opsForValue().get(key+"jdk");
+        System.out.println("jdk打印对象："+o);
+        //2.1json2
+        jacksonredisTemplate.opsForValue().set(key+"jackson",zahngShan);
+        Object o21 = jacksonredisTemplate.opsForValue().get(key+"jackson");
+        Map<String, Object> objMap = (Map<String, Object>) o21;
+        //TODO map转换对象  Json是否使用反射
+        User user = JSON.parseObject(JSON.toJSONString(objMap), User.class);
+        System.out.println("jackson--map转换对象:"+user);
+        //JSONObject.
+
+
+        System.out.println("jackson打印对象："+o21);
+
+        //2.json2
+        jackson2redisTemplate.opsForValue().set(key+"jackson2",zahngShan);
+        Object o2 = jackson2redisTemplate.opsForValue().get(key+"jackson2");
+        System.out.println("jackson2打印对象："+o2);
+
+        //3. genericJackson2
+        genericJackson2redisTemplate.opsForValue().set(key+"genericJackson2",zahngShan);
+        Object o3 = genericJackson2redisTemplate.opsForValue().get(key+"genericJackson2");
+        System.out.println("genericJackson2打印对象："+o3);
+        return o;
     }
     @GetMapping("/setTime")
     public Object setTime(String key ,String value,Long time) {
@@ -97,7 +139,7 @@ public class BaseDataController {
 
         List<User> list = new ArrayList<>();
         for(int i = 0;i< 10000;i++){
-            list.add(new User().setName(key+1).setId(i).setSex(value));
+            list.add(new User().setName(key+1).setId(i).setAge(22));
         }
         list.parallelStream().forEach(u->{
             vo.set(u.getId().toString(),u);

@@ -17,9 +17,7 @@ import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheWriter;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializationContext;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.data.redis.serializer.*;
 
 @EnableCaching
 @Configuration
@@ -54,10 +52,10 @@ public class CacheConfig extends CachingConfigurerSupport {
         //JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
         //GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-        serializer.setObjectMapper(objectMapper);
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+//        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+//        serializer.setObjectMapper(objectMapper);
 
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
         configuration = configuration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
@@ -76,48 +74,70 @@ public class CacheConfig extends CachingConfigurerSupport {
 //        return jedisConnectionFactory;
 //    }
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
+    @Bean("jackson2redisTemplate")
+    public RedisTemplate<String, Object> jackson2redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-//        final JedisConnectionFactory jedisConnectionFactory=new JedisConnectionFactory();
-//
-//        jedisConnectionFactory.setHostName(env.getProperty("spring.redis.host"));
-//        jedisConnectionFactory.setPort(Integer.parseInt(env.getProperty("spring.redis.port")));
-//        jedisConnectionFactory.setPassword(env.getProperty("spring.redis.password"));
-
         template.setConnectionFactory(redisConnectionFactory);
-        template.afterPropertiesSet();
         // redis存取对象的关键配置
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-        // ObjectRedisSerializer类为java对象的序列化和反序列化工具类
+
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-        //JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
         objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
         serializer.setObjectMapper(objectMapper);
+
         template.setValueSerializer(serializer);
-        // 为hashvalue添加序列化和反序列化类
         template.setHashValueSerializer(serializer);
+        template.afterPropertiesSet();
         return template;
     }
+    @Bean("jacksonredisTemplate")
+    public RedisTemplate<String, Object> jacksonredisTemplate(LettuceConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        // redis存取对象的关键配置
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
 
+        Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
 
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(serializer);
+        template.afterPropertiesSet();
+        return template;
+    }
+    @Bean("jdkredisTemplate")
+    @Primary
+    public RedisTemplate<String, Object> jdkredisTemplate(LettuceConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        // redis存取对象的关键配置
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
 
-    //     使用ConcurrentMapCache作为注解缓存
-//    @Bean
-//    public ConcurrentMapCacheManager cacheManager() {
-//        ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
-//        //cacheManager.setStoreByValue(true); //true表示缓存一份副本，否则缓存引用
-//        return cacheManager;
-//    }
+        JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
 
-    //    @Bean
-//    public RedisTemplate<String, String> redisTemplateListener(JedisConnectionFactory jedisConnectionFactory) {
-//        RedisTemplate<String, String> template = new RedisTemplate<>();
-//        template.setConnectionFactory(jedisConnectionFactory);
-//        return template;
-//    }
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(serializer);
+        template.afterPropertiesSet();
+        return template;
+    }
+    @Bean("genericJackson2redisTemplate")
+    public RedisTemplate<String, Object> genericJackson2redisTemplate(LettuceConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory);
+        // redis存取对象的关键配置
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+
+        GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
+
+        template.setValueSerializer(serializer);
+        template.setHashValueSerializer(serializer);
+        template.afterPropertiesSet();
+        return template;
+    }
 
 }

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>zp-self</groupId>
-  <artifactId>zp-self-io</artifactId>
+  <artifactId>hjms-Cache</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>jar</packaging>
   <parent>
@@ -23,6 +23,7 @@
     <lettuce.core>5.1.8.RELEASE</lettuce.core>
     <commons-pool2>2.6.2</commons-pool2>
     <jedis>2.9.3</jedis>
+    <mybatisplus.version>3.3.1</mybatisplus.version>
   </properties>
 
   <dependencies>
@@ -126,6 +127,39 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+    <!--mybatis-plus-->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-boot-starter</artifactId>
+      <version>3.3.1.tmp</version>
+    </dependency>
+    <!--连接数据库-->
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+
+    <!--代码生成器需要的依赖-->
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-generator</artifactId>
+      <version>${mybatisplus.version}</version>
+    </dependency>
+
+    <!--sql打印-->
+    <dependency>
+      <groupId>p6spy</groupId>
+      <artifactId>p6spy</artifactId>
+      <version>3.0.0</version>
+    </dependency>
+    <!--添加 模板引擎 依赖，MyBatis-Plus 支持 Velocity（默认）、Freemarker-->
+    <dependency>
+      <groupId>org.freemarker</groupId>
+      <artifactId>freemarker</artifactId>
+      <version>2.3.30</version>
+    </dependency>
+
   </dependencies>
 
   <build>
@@ -151,5 +185,22 @@
         </configuration>
       </plugin>
     </plugins>
+
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>**/*</include>
+        </includes>
+        <filtering>false</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.xml</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
   </build>
 </project>
