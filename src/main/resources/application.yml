@@ -2,42 +2,51 @@ server:
   port: 8888
   servlet:
     context-path: /cacheTest
-  connection-timeout: 10000
-#  ssl:
+#  ssl: annotation
 #    key-store: keystore.p12
 #    key-store-password: xxxxxx
 #    keyStoreType: PKCS12
 #    keyAlias: tomcat
 spring:
-#  mvc:
-#   async:
-#    request-timeout: 10000
   datasource:
     url: jdbc:p6spy:mysql://127.0.0.1:3306/netcommand?autoReconnect=true&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false
     username: admin
     password: admin123
     driver-class-name: com.p6spy.engine.spy.P6SpyDriver
 
+#    url: jdbc:mysql://10.38.2.12:30006/video_monitoring?Unicode=true&characterEncoding=UTF-8
+#    username: videomonitoring
+#    password: 123456
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+
   redis:
     timeout: 6000
-    host: 127.0.0.1
-    port: 6379
+#    cluster:
+#      nodes:
+#      - 172.23.120.118:7000
+#      - 172.23.120.118:7001
+#      - 172.23.120.118:7002
+#      - 172.23.120.118:7003
+#      - 172.23.120.118:7004
+#      - 172.23.120.118:7005
     lettuce:
       pool:
         max-active: 1000 #连接池最大连接数（使用负值表示没有限制）
         max-idle: 10 # 连接池中的最大空闲连接
         min-idle: 5 # 连接池中的最小空闲连接
         max-wait: -1 # 连接池最大阻塞等待时间（使用负值表示没有限制）
-#    cluster:
+    host: 127.0.0.1
+    port: 6379
+  #    cluster:
 #      max-redirects: 3 # 获取失败 最大重定向次数
 #      nodes:
 ##        - 10.38.2.12:30379
-#        - 172.23.123.141:7000
-#        - 172.23.123.141:7001
-#        - 172.23.123.141:7002
-#        - 172.23.123.141:7003
-#        - 172.23.123.141:7004
-#        - 172.23.123.141:7005
+#        - 172.23.120.118:7000
+#        - 172.23.120.118:7001
+#        - 172.23.120.118:7002
+#        - 172.23.120.118:7003
+#        - 172.23.120.118:7004
+#        - 172.23.120.118:7005
 
 
   thymeleaf:

@@ -1,31 +1,30 @@
 
 package com.pci.hjmos.cache.module.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.pci.hjmos.cache.config_eh.MyEhCacheCacheManager;
+import com.pci.hjmos.cache.config.redisconfig.config_eh.MyEhCacheCacheManager;
 import com.pci.hjmos.cache.module.entity.User;
 import com.pci.hjmos.cache.module.repository.SystemUserMapper;
 import com.pci.hjmos.cache.module.service.CacheDemoService;
-import com.pci.hjmos.cache.util.JsonUtils;
 import com.pci.hjmos.cache.util.SpringUtil;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.ehcache.EhCacheCache;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceClusterConnection;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -75,29 +74,39 @@ public class BaseDataController {
         //1.jdk
         redisTemplate.opsForValue().set(key+"jdk",zahngShan);
         Object o = redisTemplate.opsForValue().get(key+"jdk");
-        System.out.println("jdk打印对象："+o);
-        //2.1json2
+        JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
+        final byte[] serialize = serializer.serialize(zahngShan);
+        System.out.println("jdk打印序列化后字节大小："+serialize.length);
+        //序列化到文件
+        File file = new File("C:\\Users\\ying\\Desktop\\serializer" + File.separator + "hello.txt");
+        try {
+            ObjectOutputStream out= new ObjectOutputStream(new FileOutputStream(file));
+            out.writeObject(zahngShan);
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+//        //2.1json2
         jacksonredisTemplate.opsForValue().set(key+"jackson",zahngShan);
-        Object o21 = jacksonredisTemplate.opsForValue().get(key+"jackson");
-        Map<String, Object> objMap = (Map<String, Object>) o21;
-        //TODO map转换对象  Json是否使用反射
-        User user = JSON.parseObject(JSON.toJSONString(objMap), User.class);
-        System.out.println("jackson--map转换对象:"+user);
-        //JSONObject.
-
-
-        System.out.println("jackson打印对象："+o21);
-
-        //2.json2
-        jackson2redisTemplate.opsForValue().set(key+"jackson2",zahngShan);
-        Object o2 = jackson2redisTemplate.opsForValue().get(key+"jackson2");
-        System.out.println("jackson2打印对象："+o2);
-
-        //3. genericJackson2
-        genericJackson2redisTemplate.opsForValue().set(key+"genericJackson2",zahngShan);
-        Object o3 = genericJackson2redisTemplate.opsForValue().get(key+"genericJackson2");
-        System.out.println("genericJackson2打印对象："+o3);
-        return o;
+        Jackson2JsonRedisSerializer<Object>  jacksonSerializer = new Jackson2JsonRedisSerializer<>(Object.class);
+        byte[] serialize1 = jacksonSerializer.serialize(zahngShan);
+        System.out.println("json打印序列化后字节大小："+serialize1.length);
+//
+//
+//        System.out.println("jackson打印对象："+o21);
+//
+//        //2.json2
+//        jackson2redisTemplate.opsForValue().set(key+"jackson2",zahngShan);
+//        Object o2 = jackson2redisTemplate.opsForValue().get(key+"jackson2");
+//        System.out.println("jackson2打印对象："+o2);
+//
+//        //3. genericJackson2
+//        genericJackson2redisTemplate.opsForValue().set(key+"genericJackson2",zahngShan);
+//        Object o3 = genericJackson2redisTemplate.opsForValue().get(key+"genericJackson2");
+//        System.out.println("genericJackson2打印对象："+o3);
+       return serialize;
     }
     @GetMapping("/setTime")
     public Object setTime(String key ,String value,Long time) {
@@ -109,12 +118,31 @@ public class BaseDataController {
 
     @GetMapping("/get")
     public Object get(String key) {
-       // Set<String> ss = redisTemplate.keys("*N01*");
-        return redisTemplate.opsForValue().get(key);
+         return "哈哈!get"+key;
     }
 
-    @GetMapping("/delete")
-    public Object delete(String key ) {
+    @PostMapping("/post")
+    public Object post(String key) {
+        return "哈哈!post"+key;
+    }
+
+    @PutMapping("/put")
+    public Object put(String key) {
+        return "哈哈!put"+key;
+    }
+
+
+    @DeleteMapping("/delete")
+    public Object delete(String key) {
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return "哈哈222!delete"+key;
+    }
+    @GetMapping("/deleteRedis")
+    public Object deleteRedis(String key ) {
         return  redisTemplate.delete(key);
     }
 
@@ -139,7 +167,9 @@ public class BaseDataController {
 
         List<User> list = new ArrayList<>();
         for(int i = 0;i< 10000;i++){
-            list.add(new User().setName(key+1).setId(i).setAge(22));
+            User 张三 = new User("张三");
+            张三.getName();
+            list.add(new User("张三"));
         }
         list.parallelStream().forEach(u->{
             vo.set(u.getId().toString(),u);
@@ -149,11 +179,9 @@ public class BaseDataController {
 
         return "ok";
     }
-
-//    @GetMapping("/testRedission")
-//    public void set() {
-//        // 设置字符串
-//        RBucket<String> keyObj = redissonClient.getBucket("k1");
-//        keyObj.set("v1236");
-//    }
+    //测试redis事务的支持
+    @GetMapping("/testTransaction_update")
+    public User testTransaction(User user ) {
+        return cacheDemoService.update(user);
+    }
 }

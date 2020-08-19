@@ -4,6 +4,8 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * @author czchen
@@ -12,6 +14,8 @@ import org.springframework.cache.annotation.EnableCaching;
  */
 
 @SpringBootApplication
+//@EnableAsync
+//@EnableWebMvc//WebMvcAutoConfiguration//ConditionalOnMissingBean条件：无bean//Deprecated不推荐
 @MapperScan("com.pci.hjmos.cache.module.repository")
 public class MTest {
 

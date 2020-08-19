@@ -3,8 +3,8 @@ package com.pci.hjmos.cache.config;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pci.hjmos.cache.config_eh.MyEhCacheCacheManager;
-import com.pci.hjmos.cache.config_ttl.plan_3.MyRedisCacheManager;
+import com.pci.hjmos.cache.config.redisconfig.config_eh.MyEhCacheCacheManager;
+import com.pci.hjmos.cache.config.redisconfig.config_ttl.plan_3.MyRedisCacheManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -52,10 +52,10 @@ public class CacheConfig extends CachingConfigurerSupport {
         //JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
         //GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
         Jackson2JsonRedisSerializer<Object> serializer = new Jackson2JsonRedisSerializer<>(Object.class);
-//        ObjectMapper objectMapper = new ObjectMapper();
-//        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-//        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-//        serializer.setObjectMapper(objectMapper);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        objectMapper.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+        serializer.setObjectMapper(objectMapper);
 
         RedisCacheConfiguration configuration = RedisCacheConfiguration.defaultCacheConfig();
         configuration = configuration.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer));
@@ -113,14 +113,17 @@ public class CacheConfig extends CachingConfigurerSupport {
     public RedisTemplate<String, Object> jdkredisTemplate(LettuceConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
+        //设置为支持事务
+        template.setEnableTransactionSupport(true);
+
         // redis存取对象的关键配置
         template.setKeySerializer(new StringRedisSerializer());
         template.setHashKeySerializer(new StringRedisSerializer());
-
+//
         JdkSerializationRedisSerializer serializer = new JdkSerializationRedisSerializer();
-
+//
         template.setValueSerializer(serializer);
-        template.setHashValueSerializer(serializer);
+//        template.setHashValueSerializer(serializer);
         template.afterPropertiesSet();
         return template;
     }
